@@ -1,0 +1,37 @@
+{
+  "name": "@glide-pool/cli",
+  "version": "0.1.2",
+  "description": "CLI for managing GlidePool autonomous DLMM agents on Base Mainnet",
+  "bin": {
+    "glidepool": "./bin/glidepool.js"
+  },
+  "files": [
+    "bin",
+    "README.md"
+  ],
+  "keywords": [
+    "glidepool",
+    "dlmm",
+    "maverick",
+    "base",
+    "defi",
+    "liquidity",
+    "agent",
+    "cli"
+  ],
+  "author": "glide-pool",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/glide-pool/glidepool"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
