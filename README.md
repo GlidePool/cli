@@ -1,6 +1,6 @@
 # @glide-pool/cli
 
-Terminal CLI for GlidePool — autonomous DLMM agent platform on Base Mainnet.
+CLI for [GlidePool](https://github.com/GlidePool/glidepool) — autonomous DLMM agent platform on Base Mainnet.
 
 Manage agents, browse pools, inspect positions, and get Claude Opus 4 AI advice directly from your terminal.
 
@@ -30,32 +30,37 @@ export GLIDEPOOL_API_URL=https://api.glidepool.xyz
 ### `glidepool config`
 
 ```bash
-glidepool config set-api <url>   # save API URL
-glidepool config show            # show current config
+glidepool config set-api <url>   # Save API URL
+glidepool config show            # Show current config
 ```
+
+---
 
 ### `glidepool pools`
 
 ```bash
-# list all supported Maverick V2 pools
+# List all supported Maverick V2 pools (live TVL, price, fee)
 glidepool pools list
 
-# TOKEN A  TOKEN B  TVL USD    PRICE   FEE     ADDRESS
-# -------  -------  ---------  ------  ------  ----------
-# WETH     USDC     21311.00   0.0004  0.0015  0x3d70...
-# DAI      USDC     64203.00   0.9998  0.0000  0x1a2b...
+# Output:
+# TOKEN A  TOKEN B  TVL (USD)  PRICE   FEE    ADDRESS
+# -------  -------  ---------  ------  -----  ----------
+# WETH     USDC     21311      0.0004  0.0015  0x3d70...
+# DAI      USDC     64203      0.9998  0.00002 0x1a2b...
 
-# get a specific pool
+# Get details for a specific pool
 glidepool pools get 0x3d70b2f31f75dc84acdd5e1588695221959b2d37
 
-# all commands accept --json for raw JSON output
+# Raw JSON output (all commands support --json)
 glidepool pools list --json
 ```
+
+---
 
 ### `glidepool agent`
 
 ```bash
-# deploy a new autonomous agent
+# Deploy a new autonomous agent
 glidepool agent create \
   --wallet 0xYourWallet \
   --pool 0x3d70b2f31f75dc84acdd5e1588695221959b2d37 \
@@ -63,6 +68,7 @@ glidepool agent create \
   --budget 100 \
   --interval 60
 
+# Output:
 # Agent deployed
 #   ID:       4df9a63d-30eb-4885-87fc-f44f98baadbe
 #   Pool:     0x3d70b2f31f75dc84acdd5e1588695221959b2d37
@@ -70,71 +76,89 @@ glidepool agent create \
 #   Budget:   100 USDC
 #   Status:   active
 
-# list agents for a wallet
+# List all agents for a wallet
 glidepool agent list --wallet 0xYourWallet
 
-# get a single agent
+# Get a single agent
 glidepool agent get <agentId>
 
-# control lifecycle
+# Pause / resume / stop
 glidepool agent pause  <agentId>
 glidepool agent resume <agentId>
 glidepool agent stop   <agentId>
 
-# view LLM decisions (last 10 by default)
+# View LLM decisions (last 10 by default)
 glidepool agent actions <agentId>
 glidepool agent actions <agentId> --limit 20
 
-# [03:31:28] HOLD  status=completed
+# Output:
+# [03:31:28] HOLD — completed
 #   Risk:    high
-#   Reason:  Pool reserves are low, price is volatile. Holding current position.
+#   Reason:  Pool reserves are low, price is volatile. Holding current position...
 #
-# [03:32:00] REBALANCE  status=pending_signature
+# [03:32:00] REBALANCE — pending_signature
 #   Risk:    medium
-#   Bins:    lower=-5  upper=5
+#   Bins:    lower=-5 upper=5
 ```
+
+---
 
 ### `glidepool positions`
 
 ```bash
+# List Maverick V2 LP positions for a wallet
 glidepool positions 0xYourWallet
 
+# Output:
 # NFT ID  TOKEN A  TOKEN B  VALUE USD  AMOUNT A  AMOUNT B  BINS
 # ------  -------  -------  ---------  --------  --------  ----
 # 1234    WETH     USDC     523.40     0.150000  285.2200  3
 ```
 
+---
+
 ### `glidepool advisor`
 
 ```bash
-# get Claude Opus 4 analysis for a pool
+# Get Claude Opus 4 analysis for a pool
 glidepool advisor \
   --pool 0x3d70b2f31f75dc84acdd5e1588695221959b2d37 \
   --goal "maximize fee income with minimal impermanent loss"
 
-# analyze an existing position
+# Analyze an existing position
 glidepool advisor \
   --pool 0x3d70b2f31f75dc84acdd5e1588695221959b2d37 \
   --goal "should I rebalance or hold?" \
   --nft 1234
 
-# output:
-# AI Advisor
+# Output:
+# ── AI Advisor ──────────────────────────
 #   Action:   HOLD
 #   Risk:     low
-#   Summary:  Pool is healthy. Current price is centered in your bin range.
+#   Summary:  Pool is in a healthy state. Current price is centered in your bin range.
 #
 #   Reasoning:
 #   The active tick is within the optimal range. Fee generation is consistent.
-#   No rebalance needed. Monitor for price drift above tick 150.
+#   No rebalance needed at this time. Monitor for price drift above tick 150.
 ```
 
-**x402 payments:** If the server requires a micropayment (`X402_ENABLED=true`), the CLI shows the payment details and stops. Send the USDC on Base, then retry with a proof:
+**x402 payments:** If the server requires payment (`X402_ENABLED=true`), the CLI shows:
+```
+[402] Payment Required
+  Send 0.05 USDC on Base to:
+  0xTreasuryAddress...
+  Token: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
 
+  Then retry with: --payment-proof <base64(JSON{txHash,from,amount})>
+```
+
+Once you've sent the USDC:
 ```bash
 PROOF=$(echo '{"txHash":"0x...","from":"0xYour...","amount":"0.05"}' | base64)
 glidepool advisor --pool 0x3d70... --goal "..." --payment-proof "$PROOF"
 ```
+
+---
 
 ## Global Options
 
@@ -145,27 +169,28 @@ glidepool advisor --pool 0x3d70... --goal "..." --payment-proof "$PROOF"
 | `--version` | Show CLI version |
 | `--help` | Show help |
 
+---
+
 ## Agent Strategies
 
 | Strategy | Mode | Description |
 |---|---|---|
 | `conservative` | Static bins | Tight fixed range, low risk |
 | `balanced` | Both (follows price) | Medium risk, adapts to price movement |
-| `aggressive` | Right or Left (trend) | Higher exposure, follows price direction |
+| `aggressive` | Right/Left (trend) | Higher exposure, follows price direction |
 
-The agent server runs Claude Opus 4 on each cycle. It analyzes pool state against your goal and produces one of these actions:
+The agent server runs Claude Opus 4 on each cycle. It analyzes pool state (activeTick, TVL, reserves, price) against your goal and produces one of:
+- **hold** — current position is optimal, no action needed
+- **rebalance** — shift bin range, requires wallet signature
+- **withdraw** — remove liquidity, requires wallet signature
+- **add_liquidity** — add more liquidity, requires wallet signature
+- **switch_mode** — change bin mode, requires wallet signature
 
-- **hold** — position is optimal, no action needed
-- **rebalance** — shift bin range, requires your wallet signature
-- **withdraw** — remove liquidity, requires your wallet signature
-- **add_liquidity** — add more liquidity, requires your wallet signature
-- **switch_mode** — change bin mode, requires your wallet signature
-
-All on-chain actions require your explicit wallet signature. GlidePool never holds private keys.
+All on-chain actions require your explicit wallet signature — the GlidePool server never holds your private keys.
 
 ## Requirements
 
-- Node.js 18 or later
+- Node.js >= 18
 - A running GlidePool API server
 
 ## License

@@ -1,6 +1,6 @@
 {
   "name": "@glide-pool/cli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "CLI for managing GlidePool autonomous DLMM agents on Base Mainnet",
   "bin": {
     "glidepool": "./bin/glidepool.js"
@@ -29,7 +29,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/glide-pool/glidepool"
+    "url": "https://github.com/GlidePool/cli"
   },
   "publishConfig": {
     "access": "public"

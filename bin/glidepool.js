@@ -27,7 +27,7 @@ function saveConfig(data) {
 function getApiUrl(opts) {
   const url = opts.api || process.env.GLIDEPOOL_API_URL || loadConfig().apiUrl;
   if (!url) {
-    console.error('Error: API URL not set.\n  Run: glidepool config set-api <url>\n  Or:  export GLIDEPOOL_API_URL=https://your-instance.replit.app');
+    console.error('Error: API URL not set.\n  Run: glidepool config set-api <url>\n  Or:  export GLIDEPOOL_API_URL=https://api.glidepool.xyz');
     process.exit(1);
   }
   return url.replace(/\/$/, '');
